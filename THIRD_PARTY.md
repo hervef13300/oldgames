@@ -10,3 +10,10 @@
 ## Choplifter
 
 Source : dépôt privé de l’utilisateur https://github.com/hervef13300/choplifter, commit f4616c47e4eadc4e6c85638710bc2bb6c384f9f0 (Android 0.4). Portage et intégration à Oldgames demandés par son propriétaire. Simulation et rendu adaptés en JavaScript ; sept sons WAV du projet conservés sans modification. Le dépôt décrit ses graphismes et sons comme des créations originales du projet. Les références Java et le document de fidélité sont inclus dans games/choplifter/source-references. Aucun statut de domaine public ni licence tiers sur ces sources n’est présumé.
+
+
+## Zany Golf web recreation
+
+`zanygolf/` contains newly written JavaScript, original vector graphics, original course layouts and synthesized sound effects, inspired by the game published by Electronic Arts in 1988. It includes no original game disk, extracted sprites or historical music. It does not claim exact fidelity or official affiliation. Historical reference: https://archive.org/details/a2gs_Zany_golf_1988_Electronic_Arts.
+
+The UI requests DM Sans and Space Grotesk through Google Fonts, with local system-font fallbacks.

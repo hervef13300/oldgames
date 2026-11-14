@@ -23,3 +23,4 @@ for (const lib of ["apple2js", "cpu6502"])
 await copyFile("THIRD_PARTY.md", "dist/credits.txt");
 
 await cp("games/choplifter/src", "dist/games/choplifter", { recursive: true });
+await cp("zanygolf/src", "dist/zanygolf", { recursive: true });

@@ -9,6 +9,7 @@ for (const f of [
   "dist/index.html",
   "dist/games/castle-wolfenstein/index.html",
   "dist/games/choplifter/index.html",
+  "dist/zanygolf/index.html",
 ]) {
   const html = await readFile(f, "utf8");
   const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map((m) => m[1]);

@@ -13,9 +13,11 @@ Source repository: https://github.com/hervef13300/oldgames
 | [Castle Wolfenstein](https://oldgames.hervef.chatgpt.site/games/castle-wolfenstein/) | The Apple II program running in apple2js, with a browser interface                              | Arrow keys or ZQSD to move; O/K/;/comma to aim; Space to shoot; E to search; T for grenades; U to use |
 | [Choplifter](https://oldgames.hervef.chatgpt.site/games/choplifter/)                 | Browser port of the project's Android 0.4 adaptation, with original project graphics and sounds | Arrow keys or ZQSD to fly; J/K/L to face left/front/right; Space to fire; P to pause; M for sound     |
 
-Both web games use the keyboard, without virtual joysticks. Castle Wolfenstein starts with Enter, then K. Choplifter offers Classic and Assisted modes; press Enter to take off. Controls and instructions are displayed on each game's page.
+The games are designed for desktop, with keyboard controls and mouse aiming in Zany Golf. Castle Wolfenstein starts with Enter, then K. Choplifter offers Classic and Assisted modes; press Enter to take off. Controls and instructions are displayed on each game's page.
 
 Choplifter is an adaptation, not Apple II emulation. Its simulation was ported from [hervef13300/choplifter](https://github.com/hervef13300/choplifter), revision `f4616c47e4eadc4e6c85638710bc2bb6c384f9f0`. JavaScript floating-point calculations can differ slightly from Java floats. Source references are retained in `games/choplifter/source-references/`.
+
+Zany Golf provides nine original courses and an unlockable bonus, a practice mode and automatic local saving. It is a web recreation inspired by the 1988 game, not emulation. Play at https://oldgames.hervef.chatgpt.site/zanygolf/. Controls: mouse drag/release to shoot, Space for special actions, left/right arrows for flippers, P/M/F for pause/sound/fullscreen. See [its README](zanygolf/README.md) for implementation details and fidelity limits.
 
 ## Build and verify
 
@@ -35,6 +37,7 @@ npm test
 - `public/`: Oldgames catalogue, search, favourites, styles and artwork.
 - `games/castle-wolfenstein/`: Castle Wolfenstein sources (`src/`), emulator dependencies and licenses (`vendor/`), disk provenance and startup regression tests (`tests/`).
 - `games/choplifter/`: Choplifter sources and audio (`src/`), original Java references (`source-references/`), simulation tests (`tests/`) and preview generator (`scripts/`).
+- `zanygolf/`: desktop mini-golf sources, physics/interface tests and vector preview generator; published at `/zanygolf/`.
 - `scripts/`: shared website build and asset checks.
 - `dist/games/`: generated playable games, each in its own subfolder.
 - `.openai/hosting.json`: existing ChatGPT Sites project identity and static hosting configuration; no credentials.
@@ -43,9 +46,11 @@ The public ChatGPT Site uses its own managed source repository. This GitHub repo
 
 ## Saves and privacy
 
-Favourites use localStorage. Castle Wolfenstein saves use IndexedDB; Choplifter saves use a separate localStorage key. Saves stay in the same browser and origin. They do not sync to Android or other devices and are lost if site data is cleared. No game account is required by the application.
+Favourites use localStorage. Castle Wolfenstein saves use IndexedDB; Choplifter and Zany Golf each use a separate localStorage key. Saves stay in the same browser and origin. They do not sync to Android or other devices and are lost if site data is cleared. No game account is required by the application.
 
 ## Validation and limitations
+
+Fifteen Zany Golf checks cover physics, collisions, mechanisms, progression, serialization, rendering and desktop UI interaction with a DOM double. Real browser interaction, audio and fullscreen still need manual verification. The catalogue artwork is exported from the game renderer.
 
 The build and static checks verify routes, assets, sound files, unique HTML IDs, absence of virtual joysticks and the Castle Wolfenstein disk checksum. Castle Wolfenstein regression checks exercise blocked gamepad access, unavailable browser storage, resuming a background save, and booting the original disk into a new keyboard game. These run the actual bundled emulator with a mocked Canvas and browser APIs. Twelve Choplifter simulation/rendering checks cover group progression, capacity, damage, combat, pause, serialization, a rescue round trip without teleportation and all 64 rescues across four rotations.
 
