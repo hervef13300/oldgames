@@ -15,7 +15,7 @@ Source repository: https://github.com/hervef13300/oldgames
 
 Both web games use the keyboard, without virtual joysticks. Castle Wolfenstein starts with Enter, then K. Choplifter offers Classic and Assisted modes; press Enter to take off. Controls and instructions are displayed on each game's page.
 
-Choplifter is an adaptation, not Apple II emulation. Its simulation was ported from [hervef13300/choplifter](https://github.com/hervef13300/choplifter), revision `f4616c47e4eadc4e6c85638710bc2bb6c384f9f0`. JavaScript floating-point calculations can differ slightly from Java floats. Source references are retained in `source-references/choplifter/`.
+Choplifter is an adaptation, not Apple II emulation. Its simulation was ported from [hervef13300/choplifter](https://github.com/hervef13300/choplifter), revision `f4616c47e4eadc4e6c85638710bc2bb6c384f9f0`. JavaScript floating-point calculations can differ slightly from Java floats. Source references are retained in `games/choplifter/source-references/`.
 
 ## Build and verify
 
@@ -33,11 +33,10 @@ npm test
 ## Project layout
 
 - `public/`: Oldgames catalogue, search, favourites, styles and artwork.
-- `game-src/`: Castle Wolfenstein browser integration and keyboard mapping.
-- `choplifter-src/`: Choplifter simulation, Canvas renderer, keyboard interface and audio.
-- `vendor/`: Apple II emulator and CPU sources, with their licenses.
-- `source-references/`: provenance and source material for the Choplifter port.
-- `scripts/`: builds, asset checks, simulation tests and generated preview artwork.
+- `games/castle-wolfenstein/`: Castle Wolfenstein sources (`src/`), emulator dependencies and licenses (`vendor/`), and disk provenance.
+- `games/choplifter/`: Choplifter sources and audio (`src/`), original Java references (`source-references/`), simulation tests (`tests/`) and preview generator (`scripts/`).
+- `scripts/`: shared website build and asset checks.
+- `dist/games/`: generated playable games, each in its own subfolder.
 - `.openai/hosting.json`: existing ChatGPT Sites project identity and static hosting configuration; no credentials.
 
 The public ChatGPT Site uses its own managed source repository. This GitHub repository mirrors the web project for review and continued development. Pushing to GitHub alone does not deploy to ChatGPT Sites.

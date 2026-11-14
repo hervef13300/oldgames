@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
-import { Game, Mode, State as S } from "../choplifter-src/game.js";
-import { createRenderer } from "../choplifter-src/render.js";
+import { Game, Mode, State as S } from "../src/game.js";
+import { createRenderer } from "../src/render.js";
 let tests = 0;
 function test(name, fn) {
   fn();

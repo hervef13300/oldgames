@@ -1,5 +1,5 @@
-import { Game, Mode } from "../choplifter-src/game.js";
-import { createRenderer } from "../choplifter-src/render.js";
+import { Game, Mode } from "../src/game.js";
+import { createRenderer } from "../src/render.js";
 import { writeFile } from "node:fs/promises";
 const parts = [],
   stack = [];

@@ -21,7 +21,7 @@ for (const f of [
     assert((await stat(p)).isFile(), p);
   }
 }
-const provenance = JSON.parse(await readFile("disk-provenance.json", "utf8"));
+const provenance = JSON.parse(await readFile("games/castle-wolfenstein/disk-provenance.json", "utf8"));
 assert.equal(
   createHash("sha256")
     .update(await readFile("dist/games/castle-wolfenstein/castle.dsk"))

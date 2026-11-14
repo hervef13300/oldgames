@@ -6,7 +6,7 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "check": "node scripts/check.mjs",
-    "test": "node scripts/test-choplifter.mjs"
+    "test": "node games/choplifter/tests/simulation.mjs"
   },
   "devDependencies": {
     "esbuild": "0.25.12"
