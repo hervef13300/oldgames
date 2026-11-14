@@ -24,7 +24,6 @@ import RAM, { RAMState } from './ram';
 import SYMBOLS from './symbols';
 
 import { ReadonlyUint8Array, Restorable, rom } from './types';
-import { processGamepad } from './ui/gamepad';
 
 export interface Apple2Options {
     characterRom: string;
@@ -209,7 +208,8 @@ export class Apple2 implements Restorable<State>, DebuggerContainer {
             this.stats.frames++;
             this.io.tick();
             this.tick();
-            processGamepad(this.io);
+            // Oldgames uses keyboard controls only. Gamepad polling can throw
+            // under an embedded page's Permissions Policy and stop this loop.
 
             if (!this.paused && requestAnimationFrame) {
                 this.runAnimationFrame = requestAnimationFrame(runFn);

@@ -2,10 +2,10 @@ import { Apple2 } from "../vendor/apple2js/js/apple2";
 import DiskII from "../vendor/apple2js/js/cards/disk2";
 const $ = (id: string) => document.getElementById(id)!;
 let statusTimer: number;
-const status = (s: string) => {
+const status = (s: string, persistent = false) => {
   $("status").textContent = s;
   clearTimeout(statusTimer);
-  statusTimer = window.setTimeout(() => {
+  if (!persistent) statusTimer = window.setTimeout(() => {
     $("status").textContent = "";
   }, 6000);
 };
@@ -18,7 +18,7 @@ let inputTimer: number,
   moveKey = 0,
   aimKey = 0;
 const held = new Map<number, number>();
-let db: IDBDatabase;
+let db: IDBDatabase | undefined;
 function database(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     const r = indexedDB.open("castle-wolfenstein", 1);
@@ -28,6 +28,7 @@ function database(): Promise<IDBDatabase> {
   });
 }
 function readSave(): Promise<any> {
+  if (!db) return Promise.resolve(undefined);
   return new Promise((res, rej) => {
     const r = db
       .transaction("machine")
@@ -39,6 +40,10 @@ function readSave(): Promise<any> {
 }
 async function save() {
   if (!ready) return;
+  if (!db) {
+    status("Sauvegarde indisponible dans ce navigateur. Vous pouvez continuer à jouer.");
+    return;
+  }
   try {
     const state = apple.getState();
     await new Promise<void>((res, rej) => {
@@ -217,7 +222,7 @@ $("guide").addEventListener("close", () => setPaused(wasPaused));
 $("restart").onclick = async () => {
   if (!confirm("Redémarrer la machine et effacer la reprise automatique ?"))
     return;
-  await new Promise<void>((res, rej) => {
+  if (db) await new Promise<void>((res, rej) => {
     const t = db.transaction("machine", "readwrite");
     t.objectStore("machine").delete("snapshot-v1");
     t.oncomplete = () => res();
@@ -244,7 +249,17 @@ document.addEventListener("visibilitychange", () => {
 };
 async function boot() {
   try {
-    db = await database();
+    // Storage is optional: privacy settings must not block the emulator.
+    try {
+      db = await Promise.race([
+        database(),
+        new Promise<never>((_, reject) => window.setTimeout(
+          () => reject(new Error("Storage timeout")), 2000,
+        )),
+      ]);
+    } catch {
+      db = undefined;
+    }
     apple = new Apple2({
       canvas: $("screen") as HTMLCanvasElement,
       gl: false,
@@ -270,24 +285,25 @@ async function boot() {
       await response.arrayBuffer(),
     );
     apple.reset();
-    const state = await readSave();
+    const state = await readSave().catch(() => undefined);
     if (state) {
       try {
         apple.setState(state.state ?? state);
-        paused = Boolean(state.paused);
+        // Visibility changes pause before saving. Resume on a fresh visit.
+        paused = false;
         apple.getVideoModes().blit();
         status("Partie reprise");
       } catch {
         apple.reset();
         status("Reprise invalide : redémarrage");
       }
-    } else status("Au titre : Entrée, puis K pour jouer au clavier.");
+    } else status("Au titre : Entrée, puis K pour jouer au clavier.", true);
     ready = true;
     if (!paused) apple.run();
     else $("pause").textContent = "Reprendre";
     (window as any).castle = { apple, disk, save, key, setPaused, clearInputs };
   } catch (e) {
-    status("Erreur : " + e);
+    status("Démarrage impossible : " + e + ". Rechargez la page pour réessayer.", true);
     console.error(e);
   }
 }
