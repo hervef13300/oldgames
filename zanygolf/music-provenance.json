@@ -1,0 +1,67 @@
+{
+  "source": "https://www.whatisthe2gs.apple2.org.za/files/ZanyGolf/mp3/Zany_Golf_Sound_Track_(Apple_IIGS).zip",
+  "composer": "Douglas Fulton",
+  "game": "Zany Golf (1988), Electronic Arts / Sandcastle",
+  "tracks": [
+    {
+      "file": "windmill.mp3",
+      "original_file": "02 Zany Golf - Windmill Hole.mp3",
+      "sha256": "40a1e0a20dfc0a2dc6d0eba2b40a7a61fdcbe6164bded39a6e85f5990a3013f6",
+      "bytes": 1582601
+    },
+    {
+      "file": "hamburger.mp3",
+      "original_file": "03 Zany Golf - Hamburger Hole.mp3",
+      "sha256": "347115fdf30e66510cc5031614fc3651745cd9cb432f0b786aef4b1cb7be80e9",
+      "bytes": 897894
+    },
+    {
+      "file": "walls.mp3",
+      "original_file": "04 Zany Golf - Walls Hole.mp3",
+      "sha256": "e612016482c81c197c5629bd771c0b9622f84601cdc891210ab11eb7b0501e70",
+      "bytes": 1296114
+    },
+    {
+      "file": "pinball.mp3",
+      "original_file": "05 Zany Golf - Pinball Hole.mp3",
+      "sha256": "9ae7828b2f306bcfc7450b8a797f846e9d74562abbcdd563b4bc3a2836946c57",
+      "bytes": 1776908
+    },
+    {
+      "file": "fans.mp3",
+      "original_file": "06 Zany Golf - Fans Hole.mp3",
+      "sha256": "693d7f7630c7583ed4763c5ebd0fed28810c2428aec336203139d9cc3f201476",
+      "bytes": 1060087
+    },
+    {
+      "file": "carpet.mp3",
+      "original_file": "07 Zany Golf - Magic Carpet Hole.mp3",
+      "sha256": "881f7bcde5d9fee3e283e398957288dc3831ebeb20eae7a621bbf383854e2638",
+      "bytes": 1099295
+    },
+    {
+      "file": "castle.mp3",
+      "original_file": "08 Zany Golf - Castle Hole.mp3",
+      "sha256": "ce057e7485391c05b68dc38d86728ca3e8f46b72d93bb6e7e45f071b6865cc70",
+      "bytes": 1006717
+    },
+    {
+      "file": "anthill.mp3",
+      "original_file": "09 Zany Golf - Anthill Hole.mp3",
+      "sha256": "1de8215f736c447bbcb5142fc5d47d729471937bbc06f1a84e9943204c36fa2c",
+      "bytes": 1297368
+    },
+    {
+      "file": "energy.mp3",
+      "original_file": "10 Zany Golf - Energy Hole.mp3",
+      "sha256": "eadd741ce596de524ff4958d24856588e7f70432d9af8f7bee05b86bf8b67c29",
+      "bytes": 1721871
+    },
+    {
+      "file": "mystery.mp3",
+      "original_file": "11 Zany Golf - Mystery Hole.mp3",
+      "sha256": "658b91c3686e51cc1771737b42c1b0786cde87a1738014e05ea94023f232ca7b",
+      "bytes": 718582
+    }
+  ]
+}

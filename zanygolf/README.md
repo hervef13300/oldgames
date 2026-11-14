@@ -7,10 +7,12 @@ A real-time Three.js/WebGL 2 recreation inspired by Zany Golf (1988). The flat C
 ## Controls
 
 1. Click anywhere on the terrain to choose the direction. There is no need to grab the ball or drag backwards.
-2. Adjust the power slider (5–100%), or use the mouse wheel over the course.
-3. Click **Tirer**, or press **Enter**. Clicking to aim never fires a shot.
+2. Hold **Space** to charge from 5% to 100% power (about 1.5 seconds).
+3. Release **Space** to fire. Escape, pause or losing focus cancels charging without firing.
 
-Escape or right click clears aiming. **Space** temporarily activates the mechanism; the **Action** button toggles it. Left/right arrows operate flippers. P pauses, M toggles synthesized sound, F requests fullscreen. Leaving the window or hiding the tab pauses the game.
+The slider/wheel and Tirer/Enter remain available as an alternative.
+
+Escape or right click clears aiming. **E** temporarily activates the mechanism; the **Action** button toggles it. Left/right arrows operate flippers. P pauses, M toggles synthesized sound, F requests fullscreen. Leaving the window or hiding the tab pauses the game.
 
 Complete nine holes in 39 strokes or fewer to unlock the bonus. Practice selects any main course without replacing the campaign save. There is no stroke-elimination limit.
 
@@ -20,6 +22,8 @@ Saves use `oldgames:zanygolf:save:v1` in localStorage. Previous saves remain com
 
 - `src/world3d.js`: models, materials, mesh batching, shadows, animations, orthographic camera, responsive viewport and raycast picking.
 - `src/terrain.js`: shared outlines, elevation fields, boundary collision and save recovery.
+- `src/music.js`: original soundtrack selection and playback lifecycle.
+- `src/charge.js`: cancellable hold/release power charging.
 - `src/aim.js`: explicit shot direction and independently adjustable power.
 - `src/physics.js`: deterministic 120 Hz simulation, collisions, mechanisms, scoring and serialization.
 - `src/levels.js`: level rules and French guidance.
@@ -33,7 +37,7 @@ Static objects are grouped by material: each course has fewer than 150 mesh obje
 
 ## Validation and limits
 
-18 automated checks cover shots, collisions, mechanisms, scoring, saving, corrupt saves, click/slider/fire UI flow, real camera ray picking on all ten courses at three viewport ratios, finite geometry, bounded draw calls, shaped boundaries and a complete first-hole shot from the real tee.
+21 automated checks cover shots, collisions, mechanisms, scoring, saving, corrupt saves, click/slider/fire UI flow, real camera ray picking on all ten courses at three viewport ratios, finite geometry, bounded draw calls, shaped boundaries and a complete first-hole shot from the real tee.
 
 UI checks use a DOM double with only the GPU boundary substituted. Camera/raycast and scene tests use Three.js. Offline Blender renders of the actual models were inspected for framing and style. They are **not browser screenshots**: exact WebGL appearance, device frame rate, sound and fullscreen still need a real browser check because the supported browser QA tool is unavailable in this environment.
 
@@ -44,4 +48,4 @@ UI checks use a DOM double with only the GPU boundary substituted. Camera/raycas
 - Course screenshots: https://www.oldgames.sk/en/game/zany-golf/screenshots/
 - Gameplay footage inspected through extracted frames: https://archive.org/details/rosss-game-dungeon-zany-golf
 
-No historical screenshots, sprites, disks or original music are embedded. Catalogue artwork is an offline render of the game models with equivalent offline lighting.
+No historical screenshots, sprites or disks are embedded. The ten original Apple IIgs music recordings, composed by Douglas Fulton, now accompany their respective courses. Music starts after an explicit play interaction, loops, and pauses with the game. The music toggle and independent volume control are provided; source names and SHA-256 checksums are in `music-provenance.json`. Catalogue artwork is an offline render of the game models with equivalent offline lighting.

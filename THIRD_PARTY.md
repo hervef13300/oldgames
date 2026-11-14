@@ -14,7 +14,7 @@ Source : dépôt privé de l’utilisateur https://github.com/hervef13300/chopli
 
 ## Zany Golf web recreation
 
-`zanygolf/` contains newly written JavaScript, original 3D models, original course layouts and synthesized sound effects, inspired by the game published by Electronic Arts in 1988. It includes no original game disk, extracted sprites or historical music. It does not claim exact fidelity or official affiliation. Historical reference: https://archive.org/details/a2gs_Zany_golf_1988_Electronic_Arts.
+`zanygolf/` contains newly written JavaScript, original 3D models, original course layouts and synthesized sound effects, inspired by the game published by Electronic Arts in 1988. It includes no original game disk or extracted sprites. It does not claim exact fidelity or official affiliation. Historical reference: https://archive.org/details/a2gs_Zany_golf_1988_Electronic_Arts.
 
 The UI requests DM Sans and Space Grotesk through Google Fonts, with local system-font fallbacks.
 
@@ -22,3 +22,8 @@ The UI requests DM Sans and Space Grotesk through Google Fonts, with local syste
 ### Three.js
 
 Zany Golf uses Three.js 0.170.0 (MIT), bundled locally at build time. Source: https://github.com/mrdoob/three. The published license is `/zanygolf/LICENSE-three.txt`. The catalogue preview is an offline Blender render of the game models, not a browser screenshot.
+
+
+### Zany Golf Apple IIgs soundtrack
+
+The ten MP3 recordings in `zanygolf/src/music/` are the original course music composed by Douglas Fulton for Zany Golf (1988), published by Electronic Arts / Sandcastle. Retrieved from https://www.whatisthe2gs.apple2.org.za/files/ZanyGolf/mp3/Zany_Golf_Sound_Track_(Apple_IIGS).zip. Exact source filenames and SHA-256 checksums are in `zanygolf/music-provenance.json`. Historical copyright remains with the respective rights holders; these recordings are not covered by Three.js’s MIT license.

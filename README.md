@@ -17,7 +17,7 @@ The games are designed for desktop, with keyboard controls and mouse aiming in Z
 
 Choplifter is an adaptation, not Apple II emulation. Its simulation was ported from [hervef13300/choplifter](https://github.com/hervef13300/choplifter), revision `f4616c47e4eadc4e6c85638710bc2bb6c384f9f0`. JavaScript floating-point calculations can differ slightly from Java floats. Source references are retained in `games/choplifter/source-references/`.
 
-Zany Golf uses smooth Three.js/WebGL 2 rendering with antialiasing, soft shadows and animated models. It provides nine original courses and an unlockable bonus, a practice mode and automatic local saving. It is a web recreation inspired by the 1988 game, not emulation. Play at https://oldgames.hervef.chatgpt.site/zanygolf/. Controls: click the course to aim, adjust the power slider, then click Tirer or press Enter; Space for special actions, left/right arrows for flippers, P/M/F for pause/sound/fullscreen. See [its README](zanygolf/README.md) for implementation details and fidelity limits.
+Zany Golf uses smooth Three.js/WebGL 2 rendering with antialiasing, soft shadows and animated models. It provides nine original courses and an unlockable bonus, a practice mode and automatic local saving. It is a web recreation inspired by the 1988 game, not emulation. Play at https://oldgames.hervef.chatgpt.site/zanygolf/. Controls: click the course to aim, hold Space to charge and release to fire; E for special actions, left/right arrows for flippers, P/M/F for pause/sound/fullscreen. See [its README](zanygolf/README.md) for implementation details and fidelity limits.
 
 ## Build and verify
 
@@ -50,7 +50,7 @@ Favourites use localStorage. Castle Wolfenstein saves use IndexedDB; Choplifter 
 
 ## Validation and limitations
 
-Eighteen Zany Golf checks cover physics, mechanisms, progression, serialization, click/slider/fire controls, Three.js camera picking, scene geometry and shaped boundaries. Real browser interaction, audio and fullscreen still need manual verification. The catalogue artwork is an offline Blender render of the game models.
+Twenty-one Zany Golf checks cover physics, mechanisms, progression, serialization, click/slider/fire controls, Three.js camera picking, scene geometry and shaped boundaries. Real browser interaction, audio and fullscreen still need manual verification. The catalogue artwork is an offline Blender render of the game models.
 
 The build and static checks verify routes, assets, sound files, unique HTML IDs, absence of virtual joysticks and the Castle Wolfenstein disk checksum. Castle Wolfenstein regression checks exercise blocked gamepad access, unavailable browser storage, resuming a background save, and booting the original disk into a new keyboard game. These run the actual bundled emulator with a mocked Canvas and browser APIs. Twelve Choplifter simulation/rendering checks cover group progression, capacity, damage, combat, pause, serialization, a rescue round trip without teleportation and all 64 rescues across four rotations.
 

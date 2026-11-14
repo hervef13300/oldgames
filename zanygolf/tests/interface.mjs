@@ -17,7 +17,8 @@ test('Click-aim UI requires explicit fire, respects power, cancels, pauses and p
     querySelectorAll(){return [elements.primary,elements.secondary].filter(e=>!e.hidden);}
   }
   const elements=Object.fromEntries(ids.map(id=>[id,new Element(id)]));
-  globalThis.document={getElementById:id=>{assert(elements[id],id);return elements[id];},addEventListener:(n,f)=>listeners[n]=f,querySelector:()=>({requestFullscreen:async()=>{}}),activeElement:null};
+  globalThis.Audio=class {constructor(){this.paused=true;}play(){this.paused=false;return Promise.resolve();}pause(){this.paused=true;}load(){}};
+  globalThis.document={baseURI:'https://example.test/zanygolf/',getElementById:id=>{assert(elements[id],id);return elements[id];},addEventListener:(n,f)=>listeners[n]=f,querySelector:()=>({requestFullscreen:async()=>{}}),activeElement:null};
   globalThis.window={addEventListener:(n,f)=>winListeners[n]=f};globalThis.localStorage={getItem:k=>store.get(k)??null,setItem:(k,v)=>store.set(k,v)};
   globalThis.requestAnimationFrame=f=>frame=f;
   const realTimeout=globalThis.setTimeout,realClear=globalThis.clearTimeout;
@@ -32,9 +33,16 @@ test('Click-aim UI requires explicit fire, respects power, cancels, pauses and p
     const key='oldgames:zanygolf:save:v1',state=JSON.parse(store.get(key));assert.equal(state.strokes,1);
     elements.game.handlers.pointerdown(event({x:state.ball.x-40,y:state.ball.y}));
     listeners.keydown({code:'Escape',key:'Escape',preventDefault(){},target:elements.game});elements.fire.onclick();assert.equal(elements.strokes.textContent,'1');
+    elements.game.handlers.pointerdown(event({x:state.ball.x+80,y:state.ball.y-20}));
+    const space={code:'Space',key:' ',preventDefault(){},target:elements.game};
+    listeners.keydown(space);assert.equal(elements.strokes.textContent,'1');
+    for(let i=0;i<45;i++){frame(now);now+=16.667;}
+    assert(Number(elements['shot-power-value'].textContent.split(' ')[0])>40);
+    listeners.keyup(space);assert.equal(elements.strokes.textContent,'2');
+    listeners.keyup(space);assert.equal(elements.strokes.textContent,'2');
     listeners.keydown({code:'KeyP',key:'p',preventDefault(){},target:elements.game});assert(!elements.overlay.hidden);const atPause=store.get(key);for(let i=0;i<120;i++){frame(now);now+=16.667;}assert.equal(store.get(key),atPause);
     listeners.keydown({code:'Escape',key:'Escape',preventDefault(){},target:elements.game});assert(elements.overlay.hidden);
     elements.save.onclick();const campaign=store.get(key);elements['course-select'].value='5';elements.practice.onclick();assert.equal(elements['hole-name'].textContent,'Le tapis magique');elements.save.onclick();assert.equal(store.get(key),campaign);
-    winListeners.blur();assert(!elements.overlay.hidden);
+    elements.game.handlers.pointerdown(event({x:400,y:200}));listeners.keydown(space);frame(now+500);winListeners.blur();listeners.keyup(space);assert(!elements.overlay.hidden);assert.equal(elements.strokes.textContent,'0');
   }finally{globalThis.setTimeout=realTimeout;globalThis.clearTimeout=realClear;}
 });
