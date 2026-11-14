@@ -17,7 +17,7 @@ export const LEVELS = [
     subtitle: 'Un petit coup de pouce dans les airs.', tip: 'Maintenez Espace pour activer les ventilateurs. Dans les bandes bleues, le souffle pousse la balle vers le haut.',
     walls: [wall(280, 70, 25, 280), wall(575, 200, 25, 300)], sand: [{x: 340, y: 310, w: 160, h: 150}], fans: [{x: 140, y: 40, w: 125, h: 425}, {x: 620, y: 40, w: 125, h: 425}] },
   { name: 'Le tapis magique', theme: 'carpet', par: 3, color: '#d5a2ee', start: [110, 410], cup: [775, 90],
-    subtitle: 'La balle vous suit au doigt… à la souris.', tip: 'Après votre tir, maintenez Espace sur le tapis violet : la balle suit le pointeur. Attention aux obstacles.',
+    subtitle: 'Un peu de magie dans votre trajectoire.', tip: 'Après votre tir, maintenez Espace sur le tapis violet : la balle suit le pointeur. Attention aux obstacles.',
     walls: [wall(330, 100, 30, 210), wall(560, 250, 30, 220)], carpet: {x: 190, y: 60, w: 520, h: 410} },
   { name: 'Le château', theme: 'castle', par: 3, color: '#d5c5a5', start: [110, 410], cup: [755, 110],
     subtitle: 'À l’assaut du dernier pont-levis.', tip: 'La herse s’ouvre périodiquement. Traversez au bon moment ; la pente avant la porte ralentit votre balle.',

@@ -24,3 +24,5 @@ await copyFile("THIRD_PARTY.md", "dist/credits.txt");
 
 await cp("games/choplifter/src", "dist/games/choplifter", { recursive: true });
 await cp("zanygolf/src", "dist/zanygolf", { recursive: true });
+await build({ entryPoints: ["zanygolf/src/main.js"], outfile: "dist/zanygolf/main.js", bundle: true, format: "esm", target: "es2020", minify: true });
+await copyFile("node_modules/three/LICENSE", "dist/zanygolf/LICENSE-three.txt");

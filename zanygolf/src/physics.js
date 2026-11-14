@@ -1,4 +1,5 @@
 import { LEVELS, TOTAL_PAR } from './levels.js';
+import { courseCollision } from './terrain.js';
 export const WIDTH = 880, HEIGHT = 520, RADIUS = 7, STEP = 1 / 120;
 export const inside = (b, r) => b.x >= r.x && b.x <= r.x + r.w && b.y >= r.y && b.y <= r.y + r.h;
 export const speed = b => Math.hypot(b.vx, b.vy);
@@ -65,6 +66,7 @@ export function step(s, dt = STEP, input = {}) {
   if(b.x>WIDTH-RADIUS){b.x=WIDTH-RADIUS;b.vx=-Math.abs(b.vx)*.78;hit=true;}
   if(b.y<RADIUS){b.y=RADIUS;b.vy=Math.abs(b.vy)*.78;hit=true;}
   if(b.y>HEIGHT-RADIUS){b.y=HEIGHT-RADIUS;b.vy=-Math.abs(b.vy)*.78;hit=true;}
+  hit=courseCollision(s.index,b,RADIUS)||hit;
   for(const r of obstacles(s)) hit=collideRect(b,r)||hit;
   for(const [x,y,r] of l.bumpers||[]){
     let dx=b.x-x,dy=b.y-y,d=Math.hypot(dx,dy);
@@ -119,5 +121,7 @@ export function restore(raw){
   if(!Number.isFinite(o.time)||o.time<0||!Array.isArray(o.targets)||o.targets.length!==(LEVELS[o.index].targets||[]).length||o.targets.some(t=>typeof t!=='boolean'))throw Error('État invalide');
   for(const key of ['practice','sunk','complete'])if(typeof o[key]!=='boolean')throw Error('État invalide');
   if(!Number.isFinite(o.burger)||o.burger<0||o.burger>1||!Number.isFinite(o.portalCooldown)||o.portalCooldown<0||o.portalCooldown>2)throw Error('État invalide');
-  return {...createGame(o.index,o.practice),...o,paused:false,events:[],particles:[],trail:[]};
+  const state={...createGame(o.index,o.practice),...o,paused:false,events:[],particles:[],trail:[]};
+  courseCollision(state.index,state.ball,RADIUS);
+  return state;
 }

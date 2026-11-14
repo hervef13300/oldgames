@@ -2,11 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { LEVELS, TOTAL_PAR } from '../src/levels.js';
 import { createGame, step, shoot, nextHole, serialize, restore, speed, cupPosition, obstacles, unlocked, STEP } from '../src/physics.js';
-import { project, unproject, render } from '../src/render.js';
 const advance=(s,seconds,input={})=>{for(let i=0;i<Math.round(seconds/STEP);i++)step(s,STEP,input);};
-test('Pointer coordinates round-trip across the entire isometric course',()=>{
-  for(let x=0;x<=880;x+=40)for(let y=0;y<=520;y+=40){const p=project(x,y),q=unproject(p.x,p.y);assert(Math.hypot(x-q.x,y-q.y)<1e-9);}
-});
 test('Dragging backwards shoots forwards, caps power and counts a shot once',()=>{
   const s=createGame();assert(shoot(s,90,-50));assert(s.ball.vx>0&&s.ball.vy<0);assert.equal(s.strokes,1);assert.equal(shoot(s,20,30),false);
   advance(s,20);assert.equal(speed(s.ball),0);assert(shoot(s,1000,0));assert(speed(s.ball)<=652);assert.equal(s.strokes,2);
@@ -49,9 +45,4 @@ test('Practice does not enter the next hole, serialized state resumes exactly',(
 test('Malformed saves are rejected without poisoning the simulation',()=>{
   for(const patch of [{index:99},{ball:{x:NaN,y:0,vx:0,vy:0}},{scores:[-1]},{targets:[true]},{time:null},{burger:7},{practice:'true'}])assert.throws(()=>restore(JSON.stringify({...createGame(),...patch})));
   assert.throws(()=>restore('{bad json'));
-});
-test('Every course renders only finite coordinates in idle and active states',()=>{
-  const numberArgs=(...args)=>{for(const a of args)if(typeof a==='number')assert(Number.isFinite(a));};
-  const ctx=new Proxy({createLinearGradient(){return{addColorStop(){}};}},{get(o,k){return k in o?o[k]:numberArgs;},set(o,k,v){o[k]=v;return true;}});
-  for(let i=0;i<LEVELS.length;i++){const s=createGame(i);render(ctx,s);shoot(s,70,-40);advance(s,1,{action:true});render(ctx,s,{action:true,left:true,right:true,pointer:{x:400,y:200}},{x:200,y:200});}
 });

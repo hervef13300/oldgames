@@ -2,8 +2,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { project } from '../src/render.js';
-test('Desktop UI starts, shoots, cancels, pauses, saves and preserves campaign in practice',async()=>{
+import { build } from 'esbuild';
+test('Click-aim UI requires explicit fire, respects power, cancels, pauses and preserves campaign in practice',async()=>{
   const html=await readFile(new URL('../src/index.html',import.meta.url),'utf8');
   const ids=[...html.matchAll(/id="([^"]+)"/g)].map(m=>m[1]);
   const listeners={},winListeners={},store=new Map();let frame;
@@ -23,14 +23,15 @@ test('Desktop UI starts, shoots, cancels, pauses, saves and preserves campaign i
   const realTimeout=globalThis.setTimeout,realClear=globalThis.clearTimeout;
   globalThis.setTimeout=()=>0;globalThis.clearTimeout=()=>{};
   try{
-    await import('../src/main.js');
+    const built=await build({entryPoints:[new URL('../src/main.js',import.meta.url).pathname],bundle:true,write:false,format:'esm',platform:'node',plugins:[{name:'gpu-boundary',setup(b){b.onResolve({filter:/world3d\.js$/},()=>({path:'renderer',namespace:'gpu-stub'}));b.onLoad({filter:/.*/,namespace:'gpu-stub'},()=>({contents:'export function createRenderer(){return {draw(){},pick(x,y){return {x,y};}}}'}));}}]});
+    await import('data:text/javascript;base64,'+Buffer.from(built.outputFiles[0].text).toString('base64'));
     assert(!elements.overlay.hidden);elements.primary.onclick();assert(elements.overlay.hidden);assert.equal(elements.strokes.textContent,'0');
-    const event=p=>({...project(p.x,p.y),clientX:project(p.x,p.y).x,clientY:project(p.x,p.y).y,pointerId:1,pointerType:'mouse',button:0,preventDefault(){}});
-    elements.game.handlers.pointerdown(event({x:120,y:410}));elements.game.handlers.pointermove(event({x:90,y:440}));elements.game.handlers.pointerup(event({x:90,y:440}));assert.equal(elements.strokes.textContent,'1');
+    const event=p=>({clientX:p.x,clientY:p.y,pointerId:1,pointerType:'mouse',button:0,preventDefault(){}});
+    elements.game.handlers.pointerdown(event({x:300,y:340}));assert.equal(elements.strokes.textContent,'0');elements['shot-power'].handlers.input({target:{value:'22'}});elements.fire.onclick();assert.equal(elements.strokes.textContent,'1');
     let now=100;for(let i=0;i<1600;i++){frame(now);now+=16.667;}
     const key='oldgames:zanygolf:save:v1',state=JSON.parse(store.get(key));assert.equal(state.strokes,1);
-    elements.game.handlers.pointerdown(event(state.ball));elements.game.handlers.pointermove(event({x:state.ball.x-40,y:state.ball.y}));
-    listeners.keydown({code:'Escape',key:'Escape',preventDefault(){},target:elements.game});elements.game.handlers.pointerup(event({x:state.ball.x-40,y:state.ball.y}));assert.equal(elements.strokes.textContent,'1');
+    elements.game.handlers.pointerdown(event({x:state.ball.x-40,y:state.ball.y}));
+    listeners.keydown({code:'Escape',key:'Escape',preventDefault(){},target:elements.game});elements.fire.onclick();assert.equal(elements.strokes.textContent,'1');
     listeners.keydown({code:'KeyP',key:'p',preventDefault(){},target:elements.game});assert(!elements.overlay.hidden);const atPause=store.get(key);for(let i=0;i<120;i++){frame(now);now+=16.667;}assert.equal(store.get(key),atPause);
     listeners.keydown({code:'Escape',key:'Escape',preventDefault(){},target:elements.game});assert(elements.overlay.hidden);
     elements.save.onclick();const campaign=store.get(key);elements['course-select'].value='5';elements.practice.onclick();assert.equal(elements['hole-name'].textContent,'Le tapis magique');elements.save.onclick();assert.equal(store.get(key),campaign);

@@ -1,19 +1,17 @@
-// Render the actual game scene to vector artwork without a browser dependency.
-import { writeFile } from 'node:fs/promises';
+// Export the exact playable 3D model. Usage: node zanygolf/preview.mjs output.glb 0
+import { createWorld, createCamera } from './src/world3d.js';
 import { createGame } from './src/physics.js';
-import { render } from './src/render.js';
-const parts=[];let path='',ellipseMarkup='',dash=[];
-const esc=s=>String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('"','&quot;');
-const ctx={fillStyle:'#000',strokeStyle:'#fff',lineWidth:1,font:'12px sans-serif',textAlign:'left',
-  createLinearGradient(){return {addColorStop(){},toString(){return '#294344';}};},
-  fillRect(x,y,w,h){parts.push(`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${this.fillStyle}"/>`);},
-  beginPath(){path='';ellipseMarkup='';},moveTo(x,y){path+=`M${x},${y} `;},lineTo(x,y){path+=`L${x},${y} `;},closePath(){path+='Z';},
-  ellipse(x,y,rx,ry,rot){ellipseMarkup=`<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" transform="rotate(${rot*180/Math.PI} ${x} ${y})"`;},
-  fill(){parts.push(ellipseMarkup?`${ellipseMarkup} fill="${this.fillStyle}"/>`:`<path d="${path}" fill="${this.fillStyle}"/>`);},
-  stroke(){const props=`fill="none" stroke="${this.strokeStyle}" stroke-width="${this.lineWidth}" stroke-dasharray="${dash.join(' ')}"`;parts.push(ellipseMarkup?`${ellipseMarkup} ${props}/>`:`<path d="${path}" ${props}/>`);},
-  setLineDash(value){dash=value;},
-  fillText(value,x,y){parts.push(`<text x="${x}" y="${y}" font-family="sans-serif" font-size="${parseFloat(this.font)}" fill="${this.fillStyle}" text-anchor="${this.textAlign==='center'?'middle':'start'}">${esc(value)}</text>`);}
+import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
+import { writeFile, mkdir } from 'node:fs/promises';
+import { dirname } from 'node:path';
+globalThis.FileReader=class {
+  readAsArrayBuffer(blob){blob.arrayBuffer().then(b=>{this.result=b;this.onloadend?.();});}
+  readAsDataURL(blob){blob.arrayBuffer().then(b=>{this.result='data:'+blob.type+';base64,'+Buffer.from(b).toString('base64');this.onloadend?.();});}
 };
-const s=createGame(Number(process.argv[3]||0));s.time=.7;
-render(ctx,s,{}, {x:s.ball.x-60,y:s.ball.y+70});
-await writeFile(process.argv[2]||'public/assets/zanygolf.svg','<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 740">'+parts.join('')+'</svg>');
+const output=process.argv[2]||'work/zanygolf-course.glb',index=Number(process.argv[3]||0);
+const world=createWorld(index),s=createGame(index);s.time=1;s.burger=.3;world.update(s,{},null);
+const camera=createCamera();camera.name='GameCamera';world.scene.add(camera);
+for(const o of [...world.scene.children])if(o.isLight)world.scene.remove(o);
+const result=await new GLTFExporter().parseAsync(world.scene,{binary:true});
+await mkdir(dirname(output),{recursive:true});await writeFile(output,Buffer.from(result));world.dispose();
+console.log('Exported course',index+1,'to',output);

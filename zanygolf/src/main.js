@@ -1,14 +1,16 @@
 import { LEVELS, TOTAL_PAR } from './levels.js';
 import { createGame, shoot, step, nextHole, speed, STEP, serialize, restore, clamp } from './physics.js';
-import { render, unproject } from './render.js';
-const $=id=>document.getElementById(id), canvas=$('game'),ctx=canvas.getContext('2d');
+import { createRenderer } from './world3d.js';
+import { fireAt, canFire } from './aim.js';
+const $=id=>document.getElementById(id), canvas=$('game');
+let view=null,power=35,actionLatched=false,graphicsLost=false;
 const KEY='oldgames:zanygolf:save:v1';
-let game=createGame(),started=false,aim=null,dragging=false,menu='welcome',primaryAction,secondaryAction,sound=false,audio=null,last=0,acc=0,lastSave=0,uiCache='',noticeTimer;
+let game=createGame(),started=false,aim=null,menu='welcome',primaryAction,secondaryAction,sound=false,audio=null,last=0,acc=0,lastSave=0,uiCache='',noticeTimer;
 const input={action:false,left:false,right:false,pointer:{x:440,y:260}};
 const themes=['THE WINDMILL CLUB','BURGER ON THE GREEN','THE MOVING GARDEN','PINBALL COUNTRY CLUB','A BREATH OF FRESH AIR','THE MAGIC GREEN','CASTLE ON THE HILL','THE WANDERING HOLE','THE ENERGY GARDEN','THE SECRET GARDEN'];
 const tips=['Passez entre les pales.','Le trou est sous le burger.','Choisissez votre fenêtre.','Deux cibles avant le drapeau.','Laissez le vent travailler.','Prenez la balle en main.','La porte ne reste pas ouverte.','Visez un trou qui se déplace.','Rallumez les deux circuits.','Quatre cristaux, une sortie.'];
 function notice(message){$('notice').textContent=message;clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>{$('notice').textContent='';},7000);}
-function clearInput(){input.action=false;input.left=false;input.right=false;aim=null;dragging=false;}
+function clearInput(){input.action=false;input.left=false;input.right=false;aim=null;actionLatched=false;$('action').setAttribute('aria-pressed','false');}
 function beep(type){
   if(!sound)return;
   try{
@@ -32,7 +34,7 @@ function start(index=0,practice=false){game=createGame(index,practice);started=t
 function resumeSaved(){const s=saved();if(!s){notice('Aucune sauvegarde valide à reprendre.');return;}game=s;started=true;hideDialog();if(game.complete)finish();else if(game.sunk)holeFinished();}
 function welcome(){
   const hasSave=!!saved();
-  showDialog({kind:'welcome',kicker:'BIENVENUE AU CLUB',title:'Le golf prend<br>la tangente<span>.</span>',text:'Moulins, burgers et flippers : neuf trous pleins de surprises. Visez, dosez, et trouvez votre chemin.',extra:'<div class="gesture"><span>◉</span><b>CLIQUEZ</b><span>⟵</span><b>TIREZ</b><span>↗</span><b>RELÂCHEZ</b></div>',primary:'Commencer la partie ↗',onPrimary:()=>hasSave?confirmNew(()=>start()):start(),secondary:hasSave?'Reprendre ma partie':null,onSecondary:resumeSaved,footnote:'9 trous · Bonus si vous terminez en '+(TOTAL_PAR+9)+' coups maximum · Sauvegarde automatique'});
+  showDialog({kind:'welcome',kicker:'BIENVENUE AU CLUB',title:'Le golf prend<br>la tangente<span>.</span>',text:'Cliquez sur le terrain pour choisir une direction. Réglez la puissance avec le curseur, puis cliquez sur Tirer ou appuyez sur Entrée.',extra:'<div class="gesture"><span>①</span><b>VISEZ</b><span>②</span><b>DOSEZ</b><span>③</span><b>TIREZ</b></div>',primary:'Commencer la partie ↗',onPrimary:()=>hasSave?confirmNew(()=>start()):start(),secondary:hasSave?'Reprendre ma partie':null,onSecondary:resumeSaved,footnote:'9 trous · Bonus si vous terminez en '+(TOTAL_PAR+9)+' coups maximum · Sauvegarde automatique'});
 }
 function confirmNew(action){
   const wasStarted=started;
@@ -60,35 +62,39 @@ function paintUI(){
   $('score-grid').innerHTML=LEVELS.slice(0,game.index===9?10:9).map((level,i)=>`<div class="score-cell ${i===game.index?'active':''} ${game.scores[i]!==undefined?'done':''}"><small>${String(i+1).padStart(2,'0')}</small><b>${game.practice?(i===game.index?game.strokes:'·'):(game.scores[i]??(i===game.index?game.strokes:'·'))}</b><small>PAR ${level.par}</small></div>`).join('');
   $('score-grid').style.gridTemplateColumns=`repeat(${game.index===9?10:9},1fr)`;
 }
-function pointerPosition(e){
-  const r=canvas.getBoundingClientRect(),scale=Math.min(r.width/1200,r.height/740),offsetX=(r.width-1200*scale)/2,offsetY=(r.height-740*scale)/2;
-  return unproject((e.clientX-r.left-offsetX)/scale,(e.clientY-r.top-offsetY)/scale);
+function pointerPosition(e){return view?.pick(e.clientX,e.clientY);}
+function fire(){
+  if(menu||!started||!canFire(game,aim))return;
+  if(fireAt(game,aim,power)){aim=null;canvas.focus();paintUI();save();}
 }
 canvas.addEventListener('pointerdown',e=>{
   if(e.pointerType==='touch'||e.button!==0||menu||!started||game.sunk||speed(game.ball)>2)return;
-  const p=pointerPosition(e);if(Math.hypot(p.x-game.ball.x,p.y-game.ball.y)>42){notice('Cliquez près de la balle, tirez en arrière puis relâchez.');return;}
-  e.preventDefault();canvas.focus();canvas.setPointerCapture(e.pointerId);dragging=true;aim=p;input.pointer=p;
+  const p=pointerPosition(e);if(!p)return;
+  e.preventDefault();canvas.focus();aim=p;input.pointer=p;
 });
-canvas.addEventListener('pointermove',e=>{input.pointer=pointerPosition(e);if(dragging)aim=input.pointer;});
-canvas.addEventListener('pointerup',e=>{
-  if(!dragging)return;aim=pointerPosition(e);shoot(game,game.ball.x-aim.x,game.ball.y-aim.y);clearInput();if(canvas.hasPointerCapture(e.pointerId))canvas.releasePointerCapture(e.pointerId);paintUI();save();
-});
-canvas.addEventListener('pointercancel',clearInput);canvas.addEventListener('lostpointercapture',()=>{dragging=false;aim=null;});
-canvas.addEventListener('contextmenu',e=>{e.preventDefault();clearInput();});
+canvas.addEventListener('pointermove',e=>{const p=pointerPosition(e);if(p)input.pointer=p;});
+canvas.addEventListener('contextmenu',e=>{e.preventDefault();aim=null;});
+canvas.addEventListener('wheel',e=>{
+  if(menu||!started)return;e.preventDefault();power=clamp(power+(e.deltaY<0?2:-2),5,100);$('shot-power').value=power;
+},{passive:false});
+$('shot-power').addEventListener('input',e=>{power=clamp(Number(e.target.value)||35,5,100);});
+$('fire').onclick=fire;
+$('action').onclick=()=>{if(menu)return;actionLatched=!actionLatched;input.action=actionLatched;$('action').setAttribute('aria-pressed',String(actionLatched));canvas.focus();};
 document.addEventListener('keydown',e=>{
   if(menu&&e.key==='Tab'){
     const buttons=[...$('overlay').querySelectorAll('button:not([hidden])')],first=buttons[0],end=buttons.at(-1);
     if(e.shiftKey&&document.activeElement===first){e.preventDefault();end.focus();}else if(!e.shiftKey&&document.activeElement===end){e.preventDefault();first.focus();}return;
   }
   if(e.target.tagName==='SELECT')return;
-  if(e.code==='Escape'){e.preventDefault();if(dragging)clearInput();else if(menu==='pause')hideDialog();else if(!menu)pause();return;}
+  if(e.target.tagName==='INPUT'){if(e.code==='Enter'&&!menu){e.preventDefault();fire();}return;}
+  if(e.code==='Escape'){e.preventDefault();if(aim)aim=null;else if(menu==='pause')hideDialog();else if(!menu)pause();return;}
   if(menu){if(e.code==='Enter'&&!e.repeat&&e.target.tagName!=='BUTTON'){e.preventDefault();primaryAction?.();}return;}
   if(e.target.tagName==='BUTTON'&&(e.code==='Space'||e.code==='Enter'))return;
   if(['Space','ArrowLeft','ArrowRight','KeyP','KeyM','KeyF'].includes(e.code))e.preventDefault();
   if(e.code==='Space')input.action=true;if(e.code==='ArrowLeft')input.left=true;if(e.code==='ArrowRight')input.right=true;
-  if(e.repeat)return;if(e.code==='KeyP')pause();if(e.code==='KeyM')toggleSound();if(e.code==='KeyF')fullscreen();
+  if(e.code==='Enter'&&!e.repeat){e.preventDefault();fire();}if(e.repeat)return;if(e.code==='KeyP')pause();if(e.code==='KeyM')toggleSound();if(e.code==='KeyF')fullscreen();
 });
-document.addEventListener('keyup',e=>{if(e.code==='Space')input.action=false;if(e.code==='ArrowLeft')input.left=false;if(e.code==='ArrowRight')input.right=false;});
+document.addEventListener('keyup',e=>{if(e.code==='Space')input.action=actionLatched;if(e.code==='ArrowLeft')input.left=false;if(e.code==='ArrowRight')input.right=false;});
 window.addEventListener('blur',()=>{clearInput();if(!menu)pause();});document.addEventListener('visibilitychange',()=>{if(document.hidden){clearInput();save();if(!menu)pause();}});
 window.addEventListener('pagehide',()=>save());
 async function fullscreen(){try{if(document.fullscreenElement)await document.exitFullscreen();else await document.querySelector('.game-shell').requestFullscreen();}catch{notice('Le plein écran n’est pas disponible. Vous pouvez agrandir la fenêtre du navigateur.');}}
@@ -104,9 +110,16 @@ function frame(now){
     if(game.sunk)holeFinished();
     if(now-lastSave>5000){save();lastSave=now;}
   }
-  render(ctx,game,input,aim);paintUI();
-  const power=aim?Math.round(clamp(Math.hypot(aim.x-game.ball.x,aim.y-game.ball.y)/155,0,1)*100):0;$('power-fill').style.width=power+'%';$('power-value').textContent=power+' %';
-  $('play-status').textContent=menu?'Zany Golf · Édition Web':dragging?'Relâchez pour tirer · Échap pour annuler':speed(game.ball)>2?'Balle en jeu · Les actions spéciales restent disponibles':game.practice?'Entraînement · Cliquez sur la balle pour viser':'À vous de jouer · Cliquez sur la balle pour viser';
+  if(!graphicsLost)view.draw(game,input,aim,power);paintUI();
+  $('power-fill').style.width=power+'%';$('power-value').textContent=power+' %';$('shot-power-value').textContent=power+' %';
+  $('fire').disabled=!!menu||!canFire(game,aim);
+  $('play-status').textContent=menu?'Zany Golf · Édition 3D':speed(game.ball)>2?'Balle en jeu · Espace ou Action pour les mécanismes':aim?'Direction choisie · Réglez la puissance puis cliquez sur Tirer':'① Cliquez sur le terrain pour choisir votre direction';
   requestAnimationFrame(frame);
 }
-welcome();requestAnimationFrame(frame);
+try{view=createRenderer(canvas);welcome();requestAnimationFrame(frame);}catch(error){
+  console.error('Zany Golf 3D initialization failed',error);
+  showDialog({kind:'error',kicker:'AFFICHAGE 3D INDISPONIBLE',title:'Activez l’accélération graphique.',text:'Ce jeu utilise WebGL 2. Activez l’accélération matérielle du navigateur, ou ouvrez-le dans une version récente de Chrome, Edge, Firefox ou Safari.',primary:'Réessayer',onPrimary:()=>location.reload(),secondary:'Retour aux jeux',onSecondary:()=>{location.href='../';}});
+}
+canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();graphicsLost=true;save();if(!menu)pause();notice('Affichage 3D interrompu. La partie est sauvegardée.');});
+
+canvas.addEventListener('webglcontextrestored',()=>{graphicsLost=false;notice('Affichage 3D rétabli. Vous pouvez reprendre la partie.');});
