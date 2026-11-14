@@ -229,10 +229,18 @@ export function createWorld(index){
   let paddle;
   if(index===9){paddle=dynamic(group(440,h(440,475)+11,475));box(0,0,0,130,17,18,mat('#d5b975',.45,.3),paddle);box(0,10,0,116,4,14,'#b7e7d5',paddle);animations.push((s,input)=>{paddle.position.x=clamp(input.pointer?.x??440,80,800);});}
   const cup=dynamic(group(l.cup[0],h(...l.cup)+.7,l.cup[1]));
-  const cupDisc=cylinder(0,0,0,13,13,1,'#263d35',cup);cupDisc.castShadow=false;
+  const cupDisc=cylinder(0,0,0,13,13,1,'#263d35',cup);cupDisc.castShadow=false;cupDisc.name='cup-opening';
   const lip=torus(0,1,0,13,1.5,mat('#d6dcc0',.2,.4),cup);lip.rotation.x=Math.PI/2;
-  cylinder(21,44,0,1.5,1.5,88,'#ece6cd',cup);
-  const flagGeo=new THREE.PlaneGeometry(33,22,8,3),flag=mesh(flagGeo,new THREE.MeshStandardMaterial({color:'#d9654d',side:THREE.DoubleSide,roughness:.8}),37,78,0,cup);
+  const flagOffset=index===1?65:21;
+  cylinder(flagOffset,44,0,1.5,1.5,88,'#ece6cd',cup);
+  const flagGeo=new THREE.PlaneGeometry(33,22,8,3),flag=mesh(flagGeo,new THREE.MeshStandardMaterial({color:'#d9654d',side:THREE.DoubleSide,roughness:.8}),flagOffset+16,78,0,cup);flag.name='cup-flag';
+  let burgerGuide=null;
+  if(index===1){
+    // The guide sits beyond the bun's footprint; the flag and connector point
+    // to the covered opening without being hidden inside the burger model.
+    burgerGuide=torus(0,1.8,0,56,2.3,mat('#edc569',.15,.4),cup);burgerGuide.rotation.x=Math.PI/2;burgerGuide.castShadow=false;
+    beam(new THREE.Vector3(56,1.8,0),new THREE.Vector3(flagOffset,1.8,0),1.5,'#edc569',cup);
+  }
   const flagPos=flagGeo.attributes.position,flagOriginal=Float32Array.from(flagPos.array);
   const ball=mesh(new THREE.SphereGeometry(7,32,24),mat('#f9f4de',.05,.2),l.start[0],h(...l.start)+7,l.start[1]);
   dynamic(ball);
@@ -262,6 +270,7 @@ export function createWorld(index){
     const b=s.ball;ball.position.set(b.x,h(b.x,b.y)+7,b.y);ball.visible=!s.sunk;
     ball.rotation.x=b.y/7;ball.rotation.z=-b.x/7;ring.position.set(b.x,h(b.x,b.y)+1,b.y);ring.visible=!s.sunk&&Math.hypot(b.vx,b.vy)<2;
     const c=cupPosition(s);cup.position.set(c.x,h(c.x,c.y)+.7,c.y);lip.material.color.set(unlocked(s)?'#e7dfa9':'#c88c72');
+    if(burgerGuide)burgerGuide.material.color.set(unlocked(s)?'#a8efb0':'#edc569');
     for(let i=0;i<flagPos.count;i++){const x=flagOriginal[i*3],y=flagOriginal[i*3+1];flagPos.setZ(i,Math.sin(s.time*3+x*.13+y*.04)*(x+16.5)/12);}flagPos.needsUpdate=true;flagGeo.computeVertexNormals();
     aimLine.visible=!!aim&&ring.visible;marker.visible=aimLine.visible;
     if(aimLine.visible){

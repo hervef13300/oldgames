@@ -1,5 +1,5 @@
 import { LEVELS, TOTAL_PAR } from './levels.js';
-import { createGame, shoot, step, nextHole, speed, STEP, serialize, restore, clamp } from './physics.js';
+import { createGame, shoot, step, nextHole, speed, STEP, serialize, restore, clamp, unlocked } from './physics.js';
 import { createRenderer } from './world3d.js';
 import { fireAt, canFire } from './aim.js';
 import { createMusic } from './music.js';
@@ -122,6 +122,12 @@ function frame(now){
     if(now-lastSave>5000){save();lastSave=now;}
   }
   if(!graphicsLost)view.draw(game,input,aim,power);paintUI();
+  $('burger-hint').hidden=game.index!==1||!!menu;
+  if(game.index===1){
+    const open=unlocked(game);
+    $('burger-hint-title').textContent=open?'Le trou est dégagé':'Le trou est sous le burger';
+    $('burger-hint-text').textContent=open?'Visez le centre du cercle. Gardez Action activée pendant le tir.':'Activez Action ou maintenez E pour le soulever. Le cercle doré repère le trou.';
+  }
   $('power-fill').style.width=power+'%';$('power-value').textContent=Math.round(power)+' %';$('shot-power-value').textContent=Math.round(power)+' %';
   $('fire').disabled=!!menu||charge.active||!canFire(game,aim);$('shot-power').disabled=charge.active;
   $('play-status').textContent=menu?'Zany Golf · Édition 3D':charge.active?'Maintenez Espace pour doser · Relâchez pour tirer · Échap pour annuler':speed(game.ball)>2?'Balle en jeu · E ou Action pour les mécanismes':aim?'Maintenez Espace pour charger, puis relâchez pour tirer':'① Cliquez sur le terrain pour choisir votre direction';

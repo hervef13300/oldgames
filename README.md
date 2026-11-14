@@ -50,7 +50,7 @@ Favourites use localStorage. Castle Wolfenstein saves use IndexedDB; Choplifter 
 
 ## Validation and limitations
 
-Twenty-one Zany Golf checks cover physics, mechanisms, progression, serialization, click/slider/fire controls, Three.js camera picking, scene geometry and shaped boundaries. Real browser interaction, audio and fullscreen still need manual verification. The catalogue artwork is an offline Blender render of the game models.
+Twenty-two Zany Golf checks cover physics, mechanisms, progression, serialization, click/slider/fire controls, Three.js camera picking, scene geometry and shaped boundaries. Real browser interaction, audio and fullscreen still need manual verification. The catalogue artwork is an offline Blender render of the game models.
 
 The build and static checks verify routes, assets, sound files, unique HTML IDs, absence of virtual joysticks and the Castle Wolfenstein disk checksum. Castle Wolfenstein regression checks exercise blocked gamepad access, unavailable browser storage, resuming a background save, and booting the original disk into a new keyboard game. These run the actual bundled emulator with a mocked Canvas and browser APIs. Twelve Choplifter simulation/rendering checks cover group progression, capacity, damage, combat, pause, serialization, a rescue round trip without teleportation and all 64 rescues across four rotations.
 

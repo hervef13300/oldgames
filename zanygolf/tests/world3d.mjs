@@ -53,3 +53,26 @@ test('First course is completable from its tee with a normal aimed shot, without
   for(let i=0;i<1200&&!s.sunk;i++)step(s,STEP);
   assert(s.sunk);assert.equal(s.strokes,1);assert(s.time>3);
 });
+
+test('Burger course flag stays visible and the raised burger exposes the actual cup',()=>{
+  const w=createWorld(1),s=createGame(1);
+  const firstVisible=(point,camera)=>{
+    const ndc=point.clone().project(camera),ray=new THREE.Raycaster();
+    ray.setFromCamera(new THREE.Vector2(ndc.x,ndc.y),camera);
+    return ray.intersectObjects(w.root.children,true)[0]?.object;
+  };
+  for(const aspect of [1.2,1200/740,1920/1080]){
+    const camera=createCamera(aspect);
+    for(const lift of [0,.7,1]){
+      s.burger=lift;w.update(s);w.scene.updateMatrixWorld(true);
+      const flag=w.scene.getObjectByName('cup-flag');
+      assert.equal(firstVisible(flag.getWorldPosition(new THREE.Vector3()),camera),flag,'Flag hidden by burger');
+      if(lift>.65){
+        const cup=w.scene.getObjectByName('cup-opening');
+        const point=cup.getWorldPosition(new THREE.Vector3());point.y+=.5;
+        assert.equal(firstVisible(point,camera),cup,'Raised burger hides cup');
+      }
+    }
+  }
+  w.dispose();
+});
