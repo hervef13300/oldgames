@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"
+    />
+    <title>Castle Wolfenstein — Oldgames</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <span>CASTLE WOLFENSTEIN <small>APPLE II · 1981</small></span>
+      <nav>
+        <a class="home-link" href="../../">← Oldgames</a
+        ><button id="fullscreen">Plein écran</button>
+        <button id="view-toggle" aria-pressed="false">Écran seul</button>
+        <button id="pause">Pause</button><button id="save">Sauver</button
+        ><button id="help">?</button>
+      </nav>
+    </header>
+    <main>
+      <section id="display">
+        <canvas id="screen" width="560" height="384"></canvas>
+        <div id="status" role="status">Préparation de l’Apple II…</div>
+      </section>
+    </main>
+    <footer class="keyboard-help">
+      <span
+        >Flèches / ZQSD : déplacer · O / K / ; / , : viser · Espace : tirer · E
+        : fouiller · T : grenade · U : utiliser</span
+      >
+    </footer>
+    <dialog id="guide">
+      <h2>Votre mission</h2>
+      <p>Retrouvez les plans et échappez-vous du château.</p>
+      <p>
+        L’image utilise toute la hauteur en paysage. ÉCRAN SEUL masque les
+        commandes ; COMMANDES les réaffiche. Les proportions 4:3 restent
+        préservées.
+      </p>
+      <p>
+        Au titre : Entrée, puis K. Attendez la fin de l’introduction et de la
+        création du château.
+      </p>
+      <p>
+        Flèches ou ZQSD : avancer, avec diagonales en combinant deux directions.
+        Relâcher : arrêt. O / K / ; / virgule : viser haut / gauche / droite /
+        bas. I / P / M / point : viser en diagonale.
+      </p>
+      <p>
+        Visez un garde pour le menacer. Visez une porte, un coffre ou un garde
+        puis E pour fouiller. U récupère le contenu du coffre ouvert.
+      </p>
+      <p>
+        Espace tire. T lance une grenade dans la direction de l’arme. Attention
+        aux explosions et aux SS.
+      </p>
+      <p>
+        SAUVER mémorise la machine. ÉCHAP déclenche la sauvegarde du jeu sur sa
+        disquette. Le clavier physique reste disponible.
+      </p>
+      <p>
+        Version Apple II émulée, en anglais. Émulateur apple2js / cpu6502 (MIT).
+        Jeu : Muse Software, 1981.
+        <a href="LICENSE-apple2js.txt">Licence émulateur</a>.
+      </p>
+      <button id="restart">Redémarrer l’Apple II</button
+      ><button id="close-help">Fermer</button>
+    </dialog>
+    <script src="app.js"></script>
+  </body>
+</html>

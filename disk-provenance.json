@@ -1,0 +1,24 @@
+{
+  "source": "https://mirrors.apple2.org.za/ftp.apple.asimov.net/images/games/action/wolfenstein/castle_wolfenstein-fixed.dsk",
+  "bytes": 143360,
+  "sha256": "b8f90a649eff29e114de04455085b5f62f00853f3e7c4aafe7dd4f62bdaa2dc4",
+  "variant": "fixed: file size and joystick positioning corrections, per accompanying .asm text",
+  "validation": "DOS disk geometry and directory parsed; not boot-tested",
+  "catalog": [
+    "INIT1",
+    "@WOLF",
+    "APPLESOFT",
+    "BACKUP",
+    "CASTLE",
+    "CASTLE WOLFENSTEIN",
+    "HELLO",
+    "PICEX",
+    "PIX",
+    "SEKTOR",
+    "^CHARSET",
+    "^TEXT",
+    "^THINGS",
+    "^VOCAB",
+    "@INIT"
+  ]
+}

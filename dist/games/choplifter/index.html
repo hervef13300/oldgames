@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Choplifter — Oldgames</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <a href="../../">← Oldgames</a
+      ><span>CHOPLIFTER <small>ADAPTATION WEB · CLAVIER</small></span>
+      <nav>
+        <button id="save">Sauver</button><button id="sound">Son : oui</button
+        ><button id="pause">Pause · P</button
+        ><button id="fullscreen">Plein écran</button>
+      </nav>
+    </header>
+    <main>
+      <div class="stage">
+        <canvas
+          id="game"
+          width="960"
+          height="420"
+          aria-label="Choplifter, jeu de sauvetage piloté au clavier"
+        ></canvas>
+        <section id="menu" aria-label="Menu de mission">
+          <div class="panel">
+            <span class="eyebrow">OLDGAMES / MISSION DE SAUVETAGE</span>
+            <h1 id="heading">CHOPLIFTER</h1>
+            <p id="description">4 casernes · 64 personnes · 16 places à bord</p>
+            <div id="modes">
+              <button id="classic" aria-pressed="true">1 · Classique</button
+              ><button id="assisted" aria-pressed="false">2 · Assisté</button>
+            </div>
+            <p>
+              Flèches ou ZQSD : voler. J / K / L : gauche / face / droite.<br />Espace
+              : tirer. Posez-vous doucement à côté des personnes.
+            </p>
+            <button id="start" class="primary">Décoller · Entrée</button>
+            <p class="small">
+              Classique : un impact fatal. Assisté : coque et réparation à la
+              base.
+            </p>
+          </div>
+        </section>
+      </div>
+      <div class="keys">
+        <span><kbd>↑ ← ↓ →</kbd> / <kbd>Z Q S D</kbd> Voler</span
+        ><span><kbd>J</kbd> <kbd>K</kbd> <kbd>L</kbd> Orienter</span
+        ><span><kbd>Espace</kbd> Tirer</span
+        ><span><kbd>P</kbd> Pause · <kbd>M</kbd> Son</span>
+      </div>
+      <p id="status" role="status">
+        Clavier requis. L’orientation de l’appareil est indépendante de son
+        déplacement.
+      </p>
+    </main>
+    <details>
+      <summary>Mission et commandes</summary>
+      <p>
+        La première caserne est déjà ouverte. Atterrissez à côté des personnes
+        et attendez leur embarquement. Revenez sur la piste à droite du bâtiment
+        POST pour débarquer. Les passagers ne sont sauvés qu’une fois descendus.
+        Sauvez ou perdez tout le groupe avant d’ouvrir la caserne suivante.
+      </p>
+      <p>
+        Appuyez sur K pour faire face, puis sur Espace en vol pour tirer vers le
+        sol et attaquer les chars ou ouvrir une caserne. J et L orientent les
+        tirs à gauche et à droite. Trois appareils sont disponibles. Les mines
+        peuvent vous suivre jusqu’à la base.
+      </p>
+      <p>
+        La sauvegarde est propre à ce navigateur. Elle ne se synchronise pas
+        avec Android ni avec d’autres appareils. Cette version porte
+        l’adaptation Android 0.4 du projet ; ses graphismes et ses sons ont été
+        créés pour celui-ci.
+      </p>
+    </details>
+    <script type="module" src="main.js"></script>
+  </body>
+</html>
